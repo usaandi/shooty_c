@@ -78,7 +78,8 @@ void GameScene2D::update(float dt) {
     if (playerSoldier) {
         BaseWeapon* weapon = playerSoldier->getSoldierWeapon();
         int healty = playerSoldier->getCurrentHealth();
-        hud.setHealth(healty);
+        float maxHealth = playerSoldier->getSoldierStats().maxHealth;
+        hud.setHealth(healty, maxHealth);
         int currentAmmo = weapon->getAmmo();
         int maxAmmo = weapon->getMaxAmmo();
 
@@ -210,6 +211,7 @@ void GameScene2D::render(sf::RenderWindow& window) {
     //Render player
     if(playerSoldier) {
         soldierRenderer.render(window, *playerSoldier);
+        hud.renderPlayerHealthBar(window, playerSoldier->getSoldierPosition());
     }
 
     //Render projectiles
@@ -219,6 +221,6 @@ void GameScene2D::render(sf::RenderWindow& window) {
     
     //Hud render
     window.setView(window.getDefaultView());
-    hud.render(window);
+    hud.renderStatic(window);
     //soldierRenderer.render(window);
 }
