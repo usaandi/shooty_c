@@ -110,7 +110,7 @@ std::unique_ptr<BaseProjectile> AISoldier::updateChase(float dt, const BaseSoldi
         std::vector<int> path = pf.findPathBFS(*navMesh, startNode, goalNode);
 
         if (path.size() > 1) {
-            // Move toard th enext node in the path
+            // Move towards the next node in the path
             sf::Vector2f nextTarget = navMesh->getNodes()[path[1]].position;
             sf::Vector2f toNext = nextTarget - getSoldierPosition();
             float distance = std::sqrt(toNext.x * toNext.x + toNext.y * toNext.y);
