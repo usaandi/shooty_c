@@ -17,29 +17,31 @@ AISoldier::AISoldier(const sf::Vector2f& pos)
 
 std::unique_ptr<BaseProjectile> AISoldier::update(float dt, const BaseSoldier& target, const std::vector<std::unique_ptr<AISoldier>>& allEnemies) { 
     sf::Vector2f toPlayer = target.getSoldierPosition() - getSoldierPosition();
-    bool seesPlayer = canSeePlayer(target.getSoldierPosition());
+    //TODO better way for AI to detect player
+    bool seesPlayer = false;
+    if(target.isAlive()) {
+        seesPlayer = canSeePlayer(target.getSoldierPosition());
+    }
     switch (state) {
         case AIState::Patrol:
             updatePatrol(dt);
-            if (seesPlayer) {
+            if (seesPlayer && target.isAlive()) {
                 state = AIState::Chase;
             }
             break;
         case AIState::Chase:
-            return updateChase(dt, target, allEnemies);
-            if (!seesPlayer) {
+            if (!target.isAlive()) {
                 state = AIState::Patrol;
-            }
             break;
+            }
+        return updateChase(dt, target, allEnemies);
     }
-
  
     // float distance = std::sqrt(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y);
     // if (distance > 100.f) { // Only move if far away
     //     sf::Vector2f dir = toPlayer / distance;
     //     moveSoldierBy(dir * 50.f * dt);
     // }
-    
     
     return nullptr;
 
