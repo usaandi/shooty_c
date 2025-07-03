@@ -17,11 +17,9 @@ public:
     virtual ~BaseSoldier();
    
     BaseWeapon* getSoldierWeapon() const;
-
     const std::string& getSoldierName() const;
     const SoldierStats& getSoldierStats() const;
     sf::FloatRect getBounds() const;
-
     const sf::Vector2f& getSoldierPosition() const;
     sf::Vector2f& getSoldierPosition();
     config::SoldierType getSoldierType() const;
