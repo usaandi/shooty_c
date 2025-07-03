@@ -1,41 +1,81 @@
-# Project Title
+# Shooty c
 
-Simple overview of use/purpose.
+A simple C++ top-down shooter project for fun and learning.
 
 ## Description
 
-An in-depth paragraph about your project and overview of use.
+Shooty c is a barebones top-down shooter game written in C++ using [SFML](https://www.sfml-dev.org/). The project demonstrates basic game architecture, AI pathfinding with navmeshes, and rendering using SFML.
 
 ## Getting Started
 
 ### Dependencies
 
-* Describe any prerequisites, libraries, OS version, etc., needed before installing program.
+- **C++17 or newer**
+- **CMake** (for building)
+- **SFML 2.5+** (graphics, window, system)
+- A C++ compiler (GCC, Clang, or MSVC)
+- (Optional) [Make](https://www.gnu.org/software/make/) for Unix-like systems
 
 ### Installing
 
-* How/where to download your program
-* Any modifications needed to be made to files/folders
+1. **Clone the repository:**
+    ```sh
+    git clone https://github.com/yourusername/shooty_c.git
+    cd shooty_c
+    ```
 
-### Executing program
+2. **Install SFML:**
+    - On Ubuntu:
+        ```sh
+        sudo apt-get install libsfml-dev
+        ```
+    - On Windows: Download and install from [SFML downloads](https://www.sfml-dev.org/download.php).
 
-* How to run the program
-* Step-by-step bullets
+3. **Check/modify asset paths**  
+   Make sure the `assets/` folder is in the project root and contains:
+   - `fonts/`
+   - `navmesh/navmesh.txt`
+   - `sprites/`
+
+### Building
+
+From the `src/` directory:
+
+```sh
+cd src
+cmake .
+make
 ```
-code blocks for commands
+
+This will produce an executable named `main` in the `src/` directory.
+
+### Running
+
+From the `src/` directory:
+
+```sh
+./main
 ```
 
-## Help
+The game window should open.  
+- Use the keyboard to control the player.
+- Press `F` to spawn an AI enemy.
 
-Any advise for common problems or issues.
+### Project Structure
+
+- `src/` — Source code
+- `include/` — Header files
+- `assets/` — Fonts, sprites, navmesh
+- `CMakeLists.txt` — Build configuration
+
+### Example Commands
+
+```sh
+# Build
+cd src
+cmake .
+make
+
+# Run
+./main
 ```
-command to run if program contains helper info
-```
-
-## Authors
-
-Contributors names and contact info
-
-ex. Dominique Pizzie  
-ex. [@DomPizzie](https://twitter.com/dompizzie)
-
