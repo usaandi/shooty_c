@@ -4,7 +4,9 @@
 #include "core/Game.hpp"
 
 int main() {
-
+    
+    //seed the random with curren time
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
     // Have to call for now to register the weapons to factory FIXED
     //WeaponFactory::registerWeapons();
     /*M16 destoryerRifle;

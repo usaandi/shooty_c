@@ -17,8 +17,8 @@ GameScene2D::GameScene2D(sf::Vector2u windowSize, const GameConfig& config)
     Hud hud;
     view.setSize(static_cast<sf::Vector2f>(windowSize));
     view.setCenter(view.getSize() / 2.f);
-    playerSoldier = std::make_unique<PlayerSoldier>("Player1", config::SoldierType::INFANTRY);
-    auto ai1 = std::make_unique<AISoldier>(sf::Vector2f{200.f, 100.f});
+    playerSoldier = std::make_unique<PlayerSoldier>("Player1", config::SoldierType::INFANTRY, config);
+    auto ai1 = std::make_unique<AISoldier>(sf::Vector2f{200.f, 100.f}, config);
     ai1->setNavMesh(&navMesh);
     enemies.push_back(std::move(ai1));
     playerWeapon = playerSoldier->getSoldierWeapon();
@@ -61,8 +61,8 @@ void GameScene2D::handleEvents(sf::RenderWindow& window) {
 
     if (playerSoldier) {
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F) {
-            sf::Vector2f spawnPos{100.f + static_cast<float>(rand() % 500), 100.f + static_cast<float>(rand() % 500)};
-            auto aiSoldier = std::make_unique<AISoldier>(spawnPos);
+            sf::Vector2f spawnPos{100.f + static_cast<float>(rand() % 800), 100.f + static_cast<float>(rand() % 800)};
+            auto aiSoldier = std::make_unique<AISoldier>(spawnPos, config);
             aiSoldier->setNavMesh(&navMesh);
             enemies.push_back(std::move(aiSoldier));
         }
