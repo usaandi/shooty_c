@@ -6,7 +6,7 @@
 struct GameConfig
 {
     /* data */
-    float worldWidth = 3000.f;
+    float worldWidth = 2000.f;
     float worldHeight = 2000.f;
     int clientWidth = 800;
     int clientHeight = 600;
