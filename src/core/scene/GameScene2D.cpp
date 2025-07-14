@@ -162,7 +162,20 @@ void GameScene2D::update(float dt) {
         if (!enemy->isAlive()) deadCount++;
 
     }
-    //Remove dead enemies
+
+
+    // Nullify projectile owners for dead enemies BEFORE erasing them
+    for (const auto& enemy : enemies) {
+        if (!enemy->isAlive()) {
+            for (auto& projectile : projectiles) {
+                if (projectile->getOwner() == enemy.get()) {
+                    projectile->setOwner(nullptr);
+                }
+            }
+        }
+    }
+
+    // Remove dead enemies
     enemies.erase(
         std::remove_if(enemies.begin(), enemies.end(),
         [](const std::unique_ptr<AISoldier>& enemy){
