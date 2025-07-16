@@ -24,16 +24,16 @@ std::unique_ptr<BaseProjectile> AISoldier::update(float dt, const BaseSoldier& t
         seesPlayer = canSeePlayer(target.getSoldierPosition());
     }
     switch (state) {
-        case AIState::Patrol:
+        case AIState::patrol:
             updatePatrol(dt);
             if (seesPlayer && target.isAlive()) {
-                state = AIState::Chase;
+                state = AIState::chase;
                 std::cout << "TARGET FOUND" << std::endl;
             }
             break;
-        case AIState::Chase:
+        case AIState::chase:
             if (!target.isAlive()) {
-                state = AIState::Patrol;
+                state = AIState::patrol;
             break;
             }
         return updateChase(dt, target, allEnemies);

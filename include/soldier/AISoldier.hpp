@@ -7,13 +7,13 @@
 #include <nav/NavMesh.hpp>
 #include <config/GameConfig.hpp>
 
-enum class AIState { Patrol, Chase };
+enum class AIState { patrol, chase };
 
 
 class AISoldier : public BaseSoldier {
 private:
     const NavMesh* navMesh = nullptr;
-    AIState state = AIState::Patrol;
+    AIState state = AIState::patrol;
     int patrolTargetNode = -1;
 public:
     explicit AISoldier(const sf::Vector2f& pos, const GameConfig& config);
