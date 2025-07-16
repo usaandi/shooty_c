@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <string>
-
+#include <config/GameConfig.hpp>
 #include <soldier/SoldierStats.hpp>
 #include <soldier/SoldierType.hpp>
 #include <weapon/BaseWeapon.hpp>
@@ -13,15 +13,13 @@
 
 class BaseSoldier {
 public:
-    BaseSoldier(const std::string& name, config::SoldierType soldierType);
+    BaseSoldier(const std::string& name, config::SoldierType soldierType, const GameConfig& config);
     virtual ~BaseSoldier();
    
     BaseWeapon* getSoldierWeapon() const;
-
     const std::string& getSoldierName() const;
     const SoldierStats& getSoldierStats() const;
     sf::FloatRect getBounds() const;
-
     const sf::Vector2f& getSoldierPosition() const;
     sf::Vector2f& getSoldierPosition();
     config::SoldierType getSoldierType() const;
@@ -48,6 +46,8 @@ private:
     sf::Vector2f soldierPosition;
     float soldierRotation;
 
+protected:
+    const GameConfig& config;
 };
 
 void logMessage(const  std::string& message);

@@ -5,13 +5,14 @@
 #include <soldier/SoldierType.hpp>
 
 #include <config/SoldierTypeConfig.hpp>
+#include <config/GameConfig.hpp>
 #include <weapon/factory/WeaponFactory.hpp>
 
 
 
 BaseSoldier::BaseSoldier(
-        const std::string &name, config::SoldierType soldierType) 
-        : name(name), soldierType(soldierType), soldierPosition(300.0f, 400.0f)
+        const std::string &name, config::SoldierType soldierType, const GameConfig& config) 
+        : name(name), soldierType(soldierType), soldierPosition(300.0f, 400.0f), config(config)
         
 
 {
@@ -91,11 +92,14 @@ sf::Vector2f& BaseSoldier::getSoldierPosition()
 
 void BaseSoldier::setSoldierPosition(const sf::Vector2f& newPos) 
 {
-    soldierPosition = newPos;
+    float clampX = std::max(0.f, std::min(newPos.x, config.worldWidth));
+    float clampY = std::max(0.f, std::min(newPos.y, config.worldHeight));
+    soldierPosition = sf::Vector2f(clampX, clampY);
 }
 void BaseSoldier::moveSoldierBy(const sf::Vector2f& delta)
 {
-    soldierPosition += delta;
+    setSoldierPosition(getSoldierPosition() + delta);
+    //soldierPosition += delta;
 }
 
 void BaseSoldier::setSoldierRotation(float angle) {

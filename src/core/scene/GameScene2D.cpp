@@ -17,8 +17,8 @@ GameScene2D::GameScene2D(sf::Vector2u windowSize, const GameConfig& config)
     Hud hud;
     view.setSize(static_cast<sf::Vector2f>(windowSize));
     view.setCenter(view.getSize() / 2.f);
-    playerSoldier = std::make_unique<PlayerSoldier>("Player1", config::SoldierType::INFANTRY);
-    auto ai1 = std::make_unique<AISoldier>(sf::Vector2f{200.f, 100.f});
+    playerSoldier = std::make_unique<PlayerSoldier>("Player1", config::SoldierType::INFANTRY, config);
+    auto ai1 = std::make_unique<AISoldier>(sf::Vector2f{200.f, 100.f}, config);
     ai1->setNavMesh(&navMesh);
     enemies.push_back(std::move(ai1));
     playerWeapon = playerSoldier->getSoldierWeapon();
@@ -61,8 +61,8 @@ void GameScene2D::handleEvents(sf::RenderWindow& window) {
 
     if (playerSoldier) {
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F) {
-            sf::Vector2f spawnPos{100.f + static_cast<float>(rand() % 500), 100.f + static_cast<float>(rand() % 500)};
-            auto aiSoldier = std::make_unique<AISoldier>(spawnPos);
+            sf::Vector2f spawnPos{100.f + static_cast<float>(rand() % 800), 100.f + static_cast<float>(rand() % 800)};
+            auto aiSoldier = std::make_unique<AISoldier>(spawnPos, config);
             aiSoldier->setNavMesh(&navMesh);
             enemies.push_back(std::move(aiSoldier));
         }
@@ -78,7 +78,8 @@ void GameScene2D::update(float dt) {
     if (playerSoldier) {
         BaseWeapon* weapon = playerSoldier->getSoldierWeapon();
         int healty = playerSoldier->getCurrentHealth();
-        hud.setHealth(healty);
+        float maxHealth = playerSoldier->getSoldierStats().maxHealth;
+        hud.setHealth(healty, maxHealth);
         int currentAmmo = weapon->getAmmo();
         int maxAmmo = weapon->getMaxAmmo();
 
@@ -161,7 +162,20 @@ void GameScene2D::update(float dt) {
         if (!enemy->isAlive()) deadCount++;
 
     }
-    //Remove dead enemies
+
+
+    // Nullify projectile owners for dead enemies BEFORE erasing them
+    for (const auto& enemy : enemies) {
+        if (!enemy->isAlive()) {
+            for (auto& projectile : projectiles) {
+                if (projectile->getOwner() == enemy.get()) {
+                    projectile->setOwner(nullptr);
+                }
+            }
+        }
+    }
+
+    // Remove dead enemies
     enemies.erase(
         std::remove_if(enemies.begin(), enemies.end(),
         [](const std::unique_ptr<AISoldier>& enemy){
@@ -210,6 +224,7 @@ void GameScene2D::render(sf::RenderWindow& window) {
     //Render player
     if(playerSoldier) {
         soldierRenderer.render(window, *playerSoldier);
+        hud.renderPlayerHealthBar(window, playerSoldier->getSoldierPosition());
     }
 
     //Render projectiles
@@ -219,6 +234,6 @@ void GameScene2D::render(sf::RenderWindow& window) {
     
     //Hud render
     window.setView(window.getDefaultView());
-    hud.render(window);
+    hud.renderStatic(window);
     //soldierRenderer.render(window);
 }

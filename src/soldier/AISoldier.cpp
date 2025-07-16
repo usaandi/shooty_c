@@ -1,5 +1,6 @@
 #include <soldier/AISoldier.hpp>
 #include <config/SoldierTypeConfig.hpp>
+#include <config/GameConfig.hpp>
 #include <nav/PathFinding.hpp>
 #include <string>
 #include <math.h>
@@ -7,8 +8,8 @@
 
 static int enemyCount = 0;
 
-AISoldier::AISoldier(const sf::Vector2f& pos) 
-    : BaseSoldier("Enemy" + std::to_string(++enemyCount), config::SoldierType::INFANTRY)
+AISoldier::AISoldier(const sf::Vector2f& pos, const GameConfig& config) 
+    : BaseSoldier("Enemy" + std::to_string(++enemyCount), config::SoldierType::INFANTRY, config)
 
 {
     setSoldierPosition(pos);
@@ -17,29 +18,32 @@ AISoldier::AISoldier(const sf::Vector2f& pos)
 
 std::unique_ptr<BaseProjectile> AISoldier::update(float dt, const BaseSoldier& target, const std::vector<std::unique_ptr<AISoldier>>& allEnemies) { 
     sf::Vector2f toPlayer = target.getSoldierPosition() - getSoldierPosition();
-    bool seesPlayer = canSeePlayer(target.getSoldierPosition());
-    switch (state) {
-        case AIState::Patrol:
-            updatePatrol(dt);
-            if (seesPlayer) {
-                state = AIState::Chase;
-            }
-            break;
-        case AIState::Chase:
-            return updateChase(dt, target, allEnemies);
-            if (!seesPlayer) {
-                state = AIState::Patrol;
-            }
-            break;
+    //TODO better way for AI to detect player
+    bool seesPlayer = false;
+    if(target.isAlive()) {
+        seesPlayer = canSeePlayer(target.getSoldierPosition());
     }
-
+    switch (state) {
+        case AIState::patrol:
+            updatePatrol(dt);
+            if (seesPlayer && target.isAlive()) {
+                state = AIState::chase;
+                std::cout << "TARGET FOUND" << std::endl;
+            }
+            break;
+        case AIState::chase:
+            if (!target.isAlive()) {
+                state = AIState::patrol;
+            break;
+            }
+        return updateChase(dt, target, allEnemies);
+    }
  
     // float distance = std::sqrt(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y);
     // if (distance > 100.f) { // Only move if far away
     //     sf::Vector2f dir = toPlayer / distance;
     //     moveSoldierBy(dir * 50.f * dt);
     // }
-    
     
     return nullptr;
 
@@ -99,8 +103,10 @@ std::unique_ptr<BaseProjectile> AISoldier::updateChase(float dt, const BaseSoldi
 {
     sf::Vector2f toPlayer = target.getSoldierPosition() - getSoldierPosition();
     if (navMesh) {
+        float currentSoldierAngle = getSoldierRotation();
         float angle = std::atan2(toPlayer.y, toPlayer.x) * 180.f / 3.14f;
-        setSoldierRotation(angle);
+        float newAngle = lerpAngle(currentSoldierAngle, angle, dt * 5);
+        setSoldierRotation(newAngle);
 
         int startNode = navMesh->getClosestNode(getSoldierPosition());
         int goalNode = navMesh->getClosestNode(target.getSoldierPosition());
@@ -108,7 +114,7 @@ std::unique_ptr<BaseProjectile> AISoldier::updateChase(float dt, const BaseSoldi
         std::vector<int> path = pf.findPathBFS(*navMesh, startNode, goalNode);
 
         if (path.size() > 1) {
-            // Move toard th enext node in the path
+            // Move towards the next node in the path
             sf::Vector2f nextTarget = navMesh->getNodes()[path[1]].position;
             sf::Vector2f toNext = nextTarget - getSoldierPosition();
             float distance = std::sqrt(toNext.x * toNext.x + toNext.y * toNext.y);
@@ -177,7 +183,8 @@ void AISoldier::updatePatrol(float dt)
             float nextDist = std::sqrt(toNext.x * toNext.x + toNext.y * toNext.y);
             if (nextDist > 1.f) {
                 float angle = std::atan2(toNext.y, toNext.x) * 180.f / 3.141f;
-                setSoldierRotation(angle);
+                float newAngle = lerpAngle(getSoldierRotation(), angle, dt * 5);
+                setSoldierRotation(newAngle);
                 sf::Vector2f dir = toNext / nextDist;
                 moveSoldierBy(dir * 100.f * dt);
             }
@@ -196,4 +203,9 @@ void AISoldier::pickRandomPatrolTarget() {
         } while (navMesh->getNodes().size() > 1 && newTarget == patrolTargetNode);
         patrolTargetNode = newTarget;
     }
+}
+
+float AISoldier::lerpAngle(float a, float b, float t) const {
+    float diff = fmodf(b - a + 540.0f, 360.0f) - 180.0f;
+    return a + diff * t;
 }

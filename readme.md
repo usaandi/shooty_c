@@ -1,6 +1,11 @@
+
+
 # Shooty c
 
 A simple C++ top-down shooter project for fun and learning.
+
+![Gameplay screenshot](assets/screenshots/game_image.png)
+
 
 ## Description
 
