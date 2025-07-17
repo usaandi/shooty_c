@@ -25,7 +25,7 @@ std::unique_ptr<BaseProjectile> AISoldier::update(float dt, const BaseSoldier& t
     }
     switch (state) {
         case AIState::patrol:
-            updatePatrol(dt);
+            updatePatrol(dt, allEnemies);
             if (seesPlayer && target.isAlive()) {
                 state = AIState::chase;
                 std::cout << "TARGET FOUND" << std::endl;
@@ -120,8 +120,15 @@ std::unique_ptr<BaseProjectile> AISoldier::updateChase(float dt, const BaseSoldi
             float distance = std::sqrt(toNext.x * toNext.x + toNext.y * toNext.y);
             if(distance > 1.f) {
                 sf::Vector2f dir = toNext / distance;
-                moveSoldierBy(dir * 50.f * dt);
+                // Add separation
+                sf::Vector2f separation = getSeparationVector(enemies, 30.f); //min distance
+                dir += separation * 0.9f; // Separation strength
 
+                // Normalize
+                float len = std::sqrt(dir.x * dir.x + dir.y * dir.y);
+                if (len > 0.01f) dir /= len;
+
+                moveSoldierBy(dir * 50.f * dt);
             }
         }
     }
@@ -149,7 +156,7 @@ std::unique_ptr<BaseProjectile> AISoldier::updateChase(float dt, const BaseSoldi
     return nullptr;
 }
 
-void AISoldier::updatePatrol(float dt) 
+void AISoldier::updatePatrol(float dt, const std::vector<std::unique_ptr<AISoldier>>& enemies) 
 {
     if (patrolTargetNode == -1 || !navMesh) {
         pickRandomPatrolTarget();
@@ -182,10 +189,20 @@ void AISoldier::updatePatrol(float dt)
             sf::Vector2f toNext = nextTarget - getSoldierPosition();
             float nextDist = std::sqrt(toNext.x * toNext.x + toNext.y * toNext.y);
             if (nextDist > 1.f) {
+                sf::Vector2f dir = toNext / nextDist;
+
+                // Separation
+                sf::Vector2f separation = getSeparationVector(enemies, 30.f);
+                dir += separation * 0.9f;
+
+                // Normalize
+                float len = std::sqrt(dir.x * dir.x + dir.y * dir.y);
+                if (len > 0.01f) dir /= len;
+
                 float angle = std::atan2(toNext.y, toNext.x) * 180.f / 3.141f;
                 float newAngle = lerpAngle(getSoldierRotation(), angle, dt * 5);
                 setSoldierRotation(newAngle);
-                sf::Vector2f dir = toNext / nextDist;
+
                 moveSoldierBy(dir * 100.f * dt);
             }
         }
@@ -208,4 +225,22 @@ void AISoldier::pickRandomPatrolTarget() {
 float AISoldier::lerpAngle(float a, float b, float t) const {
     float diff = fmodf(b - a + 540.0f, 360.0f) - 180.0f;
     return a + diff * t;
+}
+
+sf::Vector2f AISoldier::getSeparationVector(const std::vector<std::unique_ptr<AISoldier>>& allEnemies, float minDist) const 
+{
+    sf::Vector2f separation(0.f, 0.f);
+    int count = 0;
+    for ( const auto& other : allEnemies) {
+        if (other.get() == this || !other->isAlive()) continue;
+        sf::Vector2f diff = getSoldierPosition() - other->getSoldierPosition();
+        float dist = std::sqrt(diff.x * diff.x + diff.y  * diff.y);
+        if (dist < minDist && dist > 0.0f) {
+            separation += diff / dist;
+            count++;
+        }
+    }
+    if (count > 0) 
+        separation /=static_cast<float>(count);
+    return separation;
 }
