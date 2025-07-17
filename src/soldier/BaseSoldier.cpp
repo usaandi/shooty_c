@@ -122,5 +122,5 @@ sf::FloatRect BaseSoldier::getBounds() const {
     //Sprite size is currently 50,50
     float size = 50.f;
     sf::Vector2f pos = getSoldierPosition();
-    return sf::FloatRect(pos.x - size / 2.f, pos.y -size/2.f,size,size);
+    return sf::FloatRect(pos.x - size / 2.f, pos.y -size/2.f, size, size);
 }
