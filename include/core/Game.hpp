@@ -5,6 +5,8 @@
 
 #include <core/scene/GameScene2D.hpp>
 #include <config/GameConfig.hpp>
+#include <ui/MenuManager.hpp>
+#include <memory>
 
 class Game {
 public:
@@ -13,9 +15,24 @@ public:
 
 
 private:
+
+    enum class GameState {
+        mainMenu,
+        playing,
+        paused,
+        gameOver
+    };
+
     sf::RenderWindow window;
     std::unique_ptr<GameScene2D> scene2D;
     GameConfig config;
+    Ui::MenuManager menuManager;
+    GameState currentState = GameState::mainMenu;
+
+    void processEvents();
+    void update(float dt);
+    void render();
+    void startGameScene2D();
 };
 
 
