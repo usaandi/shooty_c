@@ -12,13 +12,13 @@
 
 
 class WeaponFactory {
-    public:
+public:
     static void registerWeapons(); // Need to call on startup or initalize when called
     static std::unique_ptr<BaseWeapon> createRandomWeaponFromType(WeaponType weaponType);
     static WeaponType getRandomWeaponTypeFromSet(const std::unordered_set<WeaponType>& allowedTypes);
 
-    private:
-        static std::unordered_map<WeaponType, std::vector<std::function<std::unique_ptr<BaseWeapon>()>>> weaponMap;
+private:
+    static std::unordered_map<WeaponType, std::vector<std::function<std::unique_ptr<BaseWeapon>()>>> weaponMap;
 };
 
 

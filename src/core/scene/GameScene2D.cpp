@@ -28,36 +28,13 @@ GameScene2D::GameScene2D(sf::Vector2u windowSize, const GameConfig& config)
 }
 
 
-void GameScene2D::handleEvents(sf::RenderWindow& window) {
-    if(!initalizedPlayerWindowRef && playerSoldier) {
-        playerSoldier->setWindow(&window);
-        initalizedPlayerWindowRef = true;
+void GameScene2D::handleEvents(const sf::Event& event) {
+ 
+  
+    if (event.type == sf::Event::Resized) {
+            view.setSize(static_cast<float>(event.size.width), static_cast<float>(event.size.height)); 
+            view.setCenter(view.getSize() / 2.f);
     }
-    // handle player input
-    sf::Event event;
-
-    window.setView(view);
-    while (window.pollEvent(event)) {
-        if (event.type == sf::Event::Closed) {
-            window.close();
-        }
-        else if (event.type == sf::Event::Resized) {
-            view.setSize(static_cast<float>(event.size.width), static_cast<float>(event.size.height));
-
-        }
-    }
-    
-    if(sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-        sf::Vector2f target = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-        
-        if(playerSoldier) {
-            auto proj = playerSoldier->shootWeapon(target);
-            if (proj)  {
-                proj->setOwner(playerSoldier.get());
-                projectiles.push_back(std::move(proj)); }
-        }
-    }
-
 
     if (playerSoldier) {
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F) {
@@ -73,6 +50,22 @@ void GameScene2D::handleEvents(sf::RenderWindow& window) {
 }
 
 void GameScene2D::update(float dt) {
+
+    if (windowRef) {
+        windowRef->setView(view);  // Ensure correct mouse-world mapping
+    }   
+
+    if (windowRef && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+        sf::Vector2f target = windowRef->mapPixelToCoords(sf::Mouse::getPosition(*windowRef));
+        
+        if (playerSoldier) {
+            auto proj = playerSoldier->shootWeapon(target);
+            if (proj) {
+                proj->setOwner(playerSoldier.get());
+                projectiles.push_back(std::move(proj));
+            }
+        }
+    }
 
     //Player update
     if (playerSoldier) {
@@ -236,4 +229,12 @@ void GameScene2D::render(sf::RenderWindow& window) {
     window.setView(window.getDefaultView());
     hud.renderStatic(window);
     //soldierRenderer.render(window);
+}
+
+void GameScene2D::setWindow(sf::RenderWindow* window) {
+    windowRef = window;
+    if(playerSoldier) {
+        playerSoldier->setWindow(windowRef);
+        initalizedPlayerWindowRef = true;    
+    }
 }

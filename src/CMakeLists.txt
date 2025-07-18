@@ -18,6 +18,10 @@ add_executable(
     weapon/assault_rifle/M16.cpp
     weapon/factory/WeaponFactory.cpp
     ui/Hud.cpp
+    ui/Menu.cpp
+    ui/MenuManager.cpp
+    ui/MainMenu.cpp
+    ui/MenuItem.cpp
 )
 
 target_include_directories(main 

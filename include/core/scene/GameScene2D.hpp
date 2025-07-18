@@ -21,9 +21,10 @@
 class GameScene2D {
 public:
     GameScene2D(sf::Vector2u windowSize, const GameConfig& config);
-    void handleEvents(sf::RenderWindow& window);
+    void handleEvents(const sf::Event& event);
     void update(float dt);
     void render(sf::RenderWindow& window);
+    void setWindow(sf::RenderWindow* window);
 
 
 private:
@@ -40,6 +41,7 @@ private:
     bool initalizedPlayerWindowRef = false;
     NavMesh navMesh;
     const GameConfig& config;
+    sf::RenderWindow* windowRef = nullptr;
 
 };
 
