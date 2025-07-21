@@ -19,24 +19,31 @@ namespace Ui {
 
     MenuItem::MenuItem(const std::string_view& text, std::function<void()> onSelect)
         : text(text), onSelect(std::move(onSelect))
-    {}
+    {
+        textObject.setFont(getFont());
+        textObject.setString(text.data());
+        textObject.setCharacterSize(30);
+        textObject.setFillColor(sf::Color::White);
+
+        sf::FloatRect bounds = textObject.getLocalBounds();
+        textObject.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
+    }
 
     void MenuItem::render(sf::RenderWindow& window, bool selected, const sf::Vector2f& position) {
-        sf::Text drawable;
-        drawable.setFont(getFont());
-        drawable.setString(text.data());
-        drawable.setCharacterSize(30);
-        drawable.setFillColor(selected ? sf::Color::Yellow : sf::Color::White);
-
-        sf::FloatRect bounds = drawable.getLocalBounds();
-        drawable.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
-        drawable.setPosition(position);
         
-        window.draw(drawable);
+        textObject.setFillColor(selected ? sf::Color::Yellow : sf::Color::White);
+  
+        textObject.setPosition(position);
+        
+        window.draw(textObject);
     }
 
     void MenuItem::select() {
         if (onSelect) onSelect();
         
+    }
+
+    sf::FloatRect MenuItem::getBounds() const {
+        return textObject.getGlobalBounds();
     }
 }

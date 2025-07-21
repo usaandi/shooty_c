@@ -14,6 +14,10 @@ namespace Ui {
         virtual void handleEvent(const sf::Event&);
         virtual void update(float dt);
         virtual void render(sf::RenderWindow&);
+
+        void handleKeyPressed(const sf::Event::KeyEvent& key);
+        void handleMouseMoved(const sf::Event::MouseMoveEvent& mouseMove);
+        void handleMousePressed(const sf::Event::MouseButtonEvent& mouseButton);
     protected:
         std::vector<std::unique_ptr<MenuItem>> items;
         int selectedIndex = 0;

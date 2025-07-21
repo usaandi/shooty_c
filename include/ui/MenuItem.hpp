@@ -12,10 +12,12 @@ namespace Ui {
         MenuItem(const std::string_view& text, std::function<void()> onSelect);
         void render(sf::RenderWindow& window, bool selected, const sf::Vector2f& position);
         void select();
+        sf::FloatRect getBounds() const;
     private:
         std::string_view text;
         std::function<void()> onSelect;
-    
+
+        sf::Text textObject;
     };
 }
 
