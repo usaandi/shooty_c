@@ -51,7 +51,9 @@ void Game::update(float dt) {
         menuManager.update(dt);
     } else if (scene2D) {
         scene2D->update(dt);
-    }
+
+        if (scene2D->shouldRestart()) {restartGameScene2D();};
+    } 
 }
 
 void Game::render() {
@@ -67,4 +69,8 @@ void Game::startGameScene2D(){
     scene2D->setWindow(&window);
     currentState = GameState::playing;
     menuManager.setMenu(nullptr);
+}
+
+void Game::restartGameScene2D() {
+    startGameScene2D();
 }

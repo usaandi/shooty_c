@@ -33,6 +33,7 @@ private:
     void update(float dt);
     void render();
     void startGameScene2D();
+    void restartGameScene2D();
 };
 
 

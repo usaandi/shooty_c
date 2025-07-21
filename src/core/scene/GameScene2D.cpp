@@ -69,6 +69,9 @@ void GameScene2D::update(float dt) {
 
     //Player update
     if (playerSoldier) {
+        if(!playerSoldier->isAlive()) {
+            setRestart(true);
+        }
         BaseWeapon* weapon = playerSoldier->getSoldierWeapon();
         int healty = playerSoldier->getCurrentHealth();
         float maxHealth = playerSoldier->getSoldierStats().maxHealth;
@@ -237,4 +240,13 @@ void GameScene2D::setWindow(sf::RenderWindow* window) {
         playerSoldier->setWindow(windowRef);
         initalizedPlayerWindowRef = true;    
     }
+}
+
+bool GameScene2D::shouldRestart() const {
+    return restartRequested;
+    
+}
+
+void GameScene2D::setRestart(bool value) {
+    restartRequested = value;
 }

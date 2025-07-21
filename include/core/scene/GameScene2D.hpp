@@ -25,7 +25,8 @@ public:
     void update(float dt);
     void render(sf::RenderWindow& window);
     void setWindow(sf::RenderWindow* window);
-
+    bool shouldRestart() const;
+    void setRestart(bool value);
 
 private:
     ProjectileRenderer projectileRenderer;
@@ -42,6 +43,8 @@ private:
     NavMesh navMesh;
     const GameConfig& config;
     sf::RenderWindow* windowRef = nullptr;
+
+    bool restartRequested = false;
 
 };
 
