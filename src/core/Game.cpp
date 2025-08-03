@@ -40,7 +40,7 @@ void Game::processEvents() {
         if (currentState == GameState::mainMenu) {
             menuManager.handleEvent(event);
 
-        } else if (scene2D) {
+        } if (currentState == GameState::playing) {
             scene2D->handleEvents(event);
         }
     }
@@ -65,9 +65,9 @@ void Game::render() {
 }
 
 void Game::startGameScene2D(){
+    currentState = GameState::playing;
     scene2D = std::make_unique<GameScene2D>(window.getSize(), config);
     scene2D->setWindow(&window);
-    currentState = GameState::playing;
     menuManager.setMenu(nullptr);
 }
 
